@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 import { basename, join } from '../../utils/PathUtils';
 
@@ -50,7 +50,7 @@ export class MoveFileNode extends ExecuteNode {
                 } else {
                     let destIsDirectory = false;
                     try {
-                        const stat = await traceReactive.fs.stat(scalarDestDir);
+                        const stat = await gravityDock.fs.stat(scalarDestDir);
                         if (stat.isDirectory) {
                             destIsDirectory = true;
                         }
@@ -67,7 +67,7 @@ export class MoveFileNode extends ExecuteNode {
                     }
                 }
 
-                await traceReactive.fs.move(srcPath, destPath);
+                await gravityDock.fs.move(srcPath, destPath);
             }
             return { 'Success': true };
         } catch (err) {

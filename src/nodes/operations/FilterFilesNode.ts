@@ -1,9 +1,9 @@
-import { BaseNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { BaseNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class FilterFilesNode extends BaseNode {
     readonly typeId = 'fs-filter-files';
@@ -56,7 +56,7 @@ export class FilterFilesNode extends BaseNode {
             }
             if (onlyDirectories) {
                 try {
-                    const stat = await traceReactive.fs.stat(f);
+                    const stat = await gravityDock.fs.stat(f);
                     return stat.isDirectory;
                 } catch {
                     return false;

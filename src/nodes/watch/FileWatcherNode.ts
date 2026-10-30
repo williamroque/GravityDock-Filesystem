@@ -1,9 +1,9 @@
-import { EventNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { EventNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class FileWatcherNode extends EventNode {
     readonly typeId = 'fs-watch-file';
@@ -28,7 +28,7 @@ export class FileWatcherNode extends EventNode {
 
     private setupListener() {
         if (!this.eventCleanup) {
-            this.eventCleanup = traceReactive.fs.onWatchEvent((watchId: string, eventName: string, path: string) => {
+            this.eventCleanup = gravityDock.fs.onWatchEvent((watchId: string, eventName: string, path: string) => {
                 let targetNodeId: string | undefined;
                 for (const [id, wId] of this.watchIds.entries()) {
                     if (wId === watchId) {
@@ -39,8 +39,8 @@ export class FileWatcherNode extends EventNode {
 
                 if (targetNodeId) {
                     FileWatcherNode.latestEvents.set(targetNodeId, { path, eventName });
-                    if (typeof traceReactive !== 'undefined' && traceReactive.emitEvent) {
-                        traceReactive.emitEvent(targetNodeId);
+                    if (typeof gravityDock !== 'undefined' && gravityDock.emitEvent) {
+                        gravityDock.emitEvent(targetNodeId);
                     } else {
                         const targetEmit = this.emitFunctions.get(targetNodeId);
                         if (targetEmit) {
@@ -60,7 +60,7 @@ export class FileWatcherNode extends EventNode {
     async unregister(nodeId: string): void {
         const watchId = this.watchIds.get(nodeId);
         if (watchId) {
-            await traceReactive.fs.unwatch(watchId);
+            await gravityDock.fs.unwatch(watchId);
             this.watchIds.delete(nodeId);
         }
         this.emitFunctions.delete(nodeId);
@@ -80,7 +80,7 @@ export class FileWatcherNode extends EventNode {
         if (!path || !nodeId) return {};
 
         if (!this.watchIds.has(nodeId)) {
-            const watchId = await traceReactive.fs.watch(path, { depth: 0 });
+            const watchId = await gravityDock.fs.watch(path, { depth: 0 });
             this.watchIds.set(nodeId, watchId);
         }
 

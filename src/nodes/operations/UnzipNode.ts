@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class UnzipNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -32,7 +32,7 @@ export class UnzipNode extends ExecuteNode {
         if (!zipFile || !destDir) return { 'Success': false };
         
         try {
-            await traceReactive.fs.unzip(zipFile, destDir, overwrite);
+            await gravityDock.fs.unzip(zipFile, destDir, overwrite);
             return { 'Success': true };
         } catch (err) {
             console.error('Unzip error', err);

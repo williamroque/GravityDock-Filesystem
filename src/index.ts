@@ -21,9 +21,9 @@ import { UnzipNode } from './nodes/operations/UnzipNode';
 
 import { ChoosePathNode } from './nodes/io/ChoosePathNode';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 // 1. Instantiate the nodes
 const nodes = [
@@ -64,10 +64,10 @@ const serializableNodes = nodes.map(n => ({
     dynamicOutputs: n.dynamicOutputs
 }));
 
-traceReactive.registerNodes(serializableNodes);
+gravityDock.registerNodes(serializableNodes);
 
 // 3. Listen for evaluation requests
-traceReactive.onEvaluateNode(async ({ typeId, inputs, properties }: any) => {
+gravityDock.onEvaluateNode(async ({ typeId, inputs, properties }: any) => {
     const node = nodes.find(n => n.typeId === typeId);
     if (!node) {
         throw new Error(`Unknown node type: ${typeId}`);

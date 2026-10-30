@@ -1,6 +1,6 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 import { PDFParse } from 'pdf-parse';
 import { Buffer } from 'buffer';
 import { workerData } from './workerData';
@@ -8,7 +8,7 @@ import { workerData } from './workerData';
 // Set the worker source using the bundled base64 string provided by pdf-parse
 PDFParse.setWorker(workerData);
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class ReadPdfNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -31,7 +31,7 @@ export class ReadPdfNode extends ExecuteNode {
         if (!p) return { 'Content': '' };
         
         try {
-            const dataBase64 = await traceReactive.fs.readFile(p, 'base64' as any);
+            const dataBase64 = await gravityDock.fs.readFile(p, 'base64' as any);
             const parser = new PDFParse({ data: Buffer.from(dataBase64, 'base64') });
             const pdfData = await parser.getText();
             

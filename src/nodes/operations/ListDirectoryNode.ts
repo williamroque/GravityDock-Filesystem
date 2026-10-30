@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 import { join } from '../../utils/PathUtils';
 
@@ -28,7 +28,7 @@ export class ListDirectoryNode extends ExecuteNode {
         if (!p) return { 'Files': [] };
         
         try {
-            const files = await traceReactive.fs.listDir(p);
+            const files = await gravityDock.fs.listDir(p);
             const absoluteFiles = files.map((f: string) => join(p, f));
             return { 'Files': absoluteFiles };
         } catch (err) {

@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class ZipNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -32,7 +32,7 @@ export class ZipNode extends ExecuteNode {
         if (!source || !destZip) return { 'Success': false };
         
         try {
-            await traceReactive.fs.zip(source, destZip, overwrite);
+            await gravityDock.fs.zip(source, destZip, overwrite);
             return { 'Success': true };
         } catch (err) {
             console.error('Zip error', err);

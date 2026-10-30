@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class MoveToTrashNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -29,7 +29,7 @@ export class MoveToTrashNode extends ExecuteNode {
 
         try {
             for (const p of paths) {
-                await traceReactive.fs.trash(String(p));
+                await gravityDock.fs.trash(String(p));
             }
             return { 'Success': true };
         } catch (err) {

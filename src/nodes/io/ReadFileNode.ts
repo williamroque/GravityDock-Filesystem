@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class ReadFileNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -26,7 +26,7 @@ export class ReadFileNode extends ExecuteNode {
         if (!p) return { 'Content': '' };
         
         try {
-            const data = await traceReactive.fs.readFile(p);
+            const data = await gravityDock.fs.readFile(p);
             return { 'Content': data };
         } catch (err) {
             console.error('ReadFile error', err);

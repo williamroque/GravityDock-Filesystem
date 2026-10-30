@@ -1,5 +1,5 @@
 {
-  "id": "com.tracereactive.filesystem",
+  "id": "com.gravitydock.filesystem",
   "name": "Filesystem",
   "version": "1.0.0",
   "description": "Nodes for interacting with the local filesystem (reading, writing, watching, and path manipulation).",

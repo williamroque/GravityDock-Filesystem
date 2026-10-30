@@ -13,7 +13,7 @@ if (!fs.existsSync(manifestPath)) {
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const packageId = manifest.id || 'package';
-const outFileName = `${packageId}.trpkg`;
+const outFileName = `${packageId}.gdpkg`;
 const outPath = path.join(packageDir, outFileName);
 
 const zip = new AdmZip();

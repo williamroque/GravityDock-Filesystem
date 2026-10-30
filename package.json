@@ -1,16 +1,16 @@
 {
-  "name": "@tracereactive/filesystem",
+  "name": "@gravitydock/filesystem",
   "version": "1.0.0",
-  "description": "TraceReactive Filesystem package",
+  "description": "Gravity Dock Filesystem package",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "node scripts/extract-worker.js",
-    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --platform=browser --format=iife --global-name=__TraceReactive_Package",
-    "build:trpkg": "npm run build && node scripts/build-trpkg.js",
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --platform=browser --format=iife --global-name=__Gravity Dock_Package",
+    "build:gdpkg": "npm run build && node scripts/build-gdpkg.js",
     "dev": "npm run build -- --watch"
   },
   "devDependencies": {
-    "@tracereactive/types": "file:../types",
+    "@gravitydock/types": "file:../types",
     "adm-zip": "^0.6.1",
     "esbuild": "^0.25.0",
     "typescript": "^5.7.3"

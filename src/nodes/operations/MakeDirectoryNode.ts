@@ -1,9 +1,9 @@
-import { ExecuteNode } from '@tracereactive/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@tracereactive/types';
+import { ExecuteNode } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
-import type { TraceReactiveAPI } from '@tracereactive/types';
+import type { GravityDockAPI } from '@gravitydock/types';
 
-declare const traceReactive: TraceReactiveAPI;
+declare const gravityDock: GravityDockAPI;
 
 export class MakeDirectoryNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -30,7 +30,7 @@ export class MakeDirectoryNode extends ExecuteNode {
         if (!p) return { 'Success': false };
         
         try {
-            await traceReactive.fs.mkdir(p, { recursive });
+            await gravityDock.fs.mkdir(p, { recursive });
             return { 'Success': true };
         } catch (err) {
             console.error('MakeDirectory error', err);
