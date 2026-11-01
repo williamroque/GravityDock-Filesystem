@@ -73,9 +73,13 @@ export class FileWatcherNode extends EventNode {
     }
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
+        const nodeId = properties['_nodeId'];
+        if (properties['enabled'] === false || properties['_action'] === 'unregister') {
+            if (nodeId) await this.unregister(nodeId);
+            return {};
+        }
         this.setupListener();
         const path = properties['path'];
-        const nodeId = properties['_nodeId'];
 
         if (!path || !nodeId) return {};
 
