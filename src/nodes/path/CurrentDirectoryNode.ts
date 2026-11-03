@@ -1,6 +1,8 @@
 import { BaseNode } from '@gravitydock/types';
-import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
+import type { InputDefinition, OutputDefinition, PropertyDefinition, GravityDockAPI } from '@gravitydock/types';
 import { dirname } from '../../utils/PathUtils';
+
+declare const gravityDock: GravityDockAPI;
 
 export class CurrentDirectoryNode extends BaseNode {
     readonly typeId = 'fs-current-directory';
@@ -17,9 +19,36 @@ export class CurrentDirectoryNode extends BaseNode {
     readonly properties: PropertyDefinition[] = [];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = properties['_currentFilePath'];
+        if (properties['_isGeneratedScript']) {
+            const scriptDir = properties['_currentDirectory']
+                || (properties['_currentFilePath'] ? dirname(String(properties['_currentFilePath'])) : '')
+                || (typeof __dirname !== 'undefined' ? __dirname : '')
+                || (typeof process !== 'undefined' && process.cwd ? process.cwd() : '');
+            return {
+                'Path': scriptDir
+            };
+        }
+
+        if (properties['_homeDir']) {
+            return {
+                'Path': properties['_homeDir']
+            };
+        }
+
+        if (typeof gravityDock !== 'undefined' && gravityDock.fs && typeof (gravityDock.fs as any).getHomeDir === 'function') {
+            const home = await (gravityDock.fs as any).getHomeDir();
+            if (home) {
+                return {
+                    'Path': home
+                };
+            }
+        }
+
+        const envHome = (typeof process !== 'undefined' && process.env)
+            ? (process.env.HOME || process.env.USERPROFILE || '')
+            : '';
         return {
-            'Path': p ? dirname(String(p)) : ''
+            'Path': envHome
         };
     }
 }
