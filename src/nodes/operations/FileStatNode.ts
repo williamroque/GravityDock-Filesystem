@@ -19,10 +19,18 @@ export class FileStatNode extends ExecuteNode {
         { name: 'Stat', outputType: 'fs:stat' }
     ];
 
-    readonly properties: PropertyDefinition[] = [];
+    readonly properties: PropertyDefinition[] = [
+        {
+            name: 'path',
+            label: 'Path',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openFile', 'openDirectory']
+        }
+    ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = inputs['Path'] ? String(inputs['Path']) : '';
+        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
         if (!p) return {};
         
         try {

@@ -22,11 +22,26 @@ export class MoveFileNode extends ExecuteNode {
         { name: 'Success', outputType: 'core:boolean' }
     ];
 
-    readonly properties: PropertyDefinition[] = [];
+    readonly properties: PropertyDefinition[] = [
+        {
+            name: 'source',
+            label: 'Source',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openFile', 'openDirectory']
+        },
+        {
+            name: 'destination',
+            label: 'Destination',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openFile', 'openDirectory']
+        }
+    ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const srcInput = inputs['Source'];
-        const destInput = inputs['Destination'];
+        const srcInput = inputs['Source'] || properties['source'];
+        const destInput = inputs['Destination'] || properties['destination'];
         
         if (!srcInput || !destInput) return { 'Success': false };
         

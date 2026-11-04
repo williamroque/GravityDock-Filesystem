@@ -21,12 +21,26 @@ export class ZipNode extends ExecuteNode {
     ];
 
     readonly properties: PropertyDefinition[] = [
+        {
+            name: 'source',
+            label: 'Source',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openFile', 'openDirectory']
+        },
+        {
+            name: 'destinationZip',
+            label: 'Destination Zip',
+            type: 'filepath' as const,
+            defaultValue: '',
+            filters: [{ name: 'Zip Files', extensions: ['zip'] }]
+        },
         { name: 'overwrite', label: 'Overwrite', type: 'boolean' as const, defaultValue: false }
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const source = inputs['Source'];
-        const destZip = inputs['Destination Zip'] ? String(inputs['Destination Zip']) : '';
+        const source = inputs['Source'] || properties['source'];
+        const destZip = (inputs['Destination Zip'] ? String(inputs['Destination Zip']) : '') || (properties['destinationZip'] ? String(properties['destinationZip']) : '');
         const overwrite = properties['overwrite'] ?? false;
         
         if (!source || !destZip) return { 'Success': false };

@@ -17,11 +17,14 @@ export class PathJoinNode extends BaseNode {
         { name: 'Path', outputType: 'core:path' }
     ];
 
-    readonly properties: PropertyDefinition[] = [];
+    readonly properties: PropertyDefinition[] = [
+        { name: 'path1', label: 'Path 1', type: 'filepath' as const, defaultValue: '' },
+        { name: 'path2', label: 'Path 2', type: 'string' as const, defaultValue: '' }
+    ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p1 = inputs['Path 1'] ? String(inputs['Path 1']) : '';
-        const p2 = inputs['Path 2'] ? String(inputs['Path 2']) : '';
+        const p1 = (inputs['Path 1'] ? String(inputs['Path 1']) : '') || (properties['path1'] ? String(properties['path1']) : '');
+        const p2 = (inputs['Path 2'] ? String(inputs['Path 2']) : '') || (properties['path2'] ? String(properties['path2']) : '');
         return {
             'Path': join(p1, p2)
         };

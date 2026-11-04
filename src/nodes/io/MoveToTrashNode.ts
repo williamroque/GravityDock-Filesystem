@@ -19,10 +19,18 @@ export class MoveToTrashNode extends ExecuteNode {
         { name: 'Success', outputType: 'core:boolean' }
     ];
 
-    readonly properties: PropertyDefinition[] = [];
+    readonly properties: PropertyDefinition[] = [
+        {
+            name: 'path',
+            label: 'Path',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openFile', 'openDirectory']
+        }
+    ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const pathInput = inputs['Path'];
+        const pathInput = inputs['Path'] || properties['path'];
         if (!pathInput) return { 'Success': false };
         
         const paths: string[] = Array.isArray(pathInput) ? pathInput : [String(pathInput)];

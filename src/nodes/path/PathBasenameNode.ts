@@ -17,11 +17,12 @@ export class PathBasenameNode extends BaseNode {
     ];
 
     readonly properties: PropertyDefinition[] = [
+        { name: 'path', label: 'Path', type: 'filepath' as const, defaultValue: '' },
         { name: 'removeExtension', label: 'Remove Extension', type: 'string' as const, defaultValue: '' }
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = inputs['Path'] ? String(inputs['Path']) : '';
+        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
         const extension = properties['removeExtension'] as string;
         return { 'Basename': basename(p, extension || undefined) };
     }

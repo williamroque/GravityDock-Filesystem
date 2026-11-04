@@ -21,10 +21,18 @@ export class ListDirectoryNode extends ExecuteNode {
         { name: 'Files', outputType: 'core:path-array' }
     ];
 
-    readonly properties: PropertyDefinition[] = [];
+    readonly properties: PropertyDefinition[] = [
+        {
+            name: 'path',
+            label: 'Path',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openDirectory']
+        }
+    ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = inputs['Path'] ? String(inputs['Path']) : '';
+        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
         if (!p) return { 'Files': [] };
         
         try {
