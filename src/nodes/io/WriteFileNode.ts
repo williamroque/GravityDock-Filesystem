@@ -25,7 +25,8 @@ export class WriteFileNode extends ExecuteNode {
             name: 'path',
             label: 'Path',
             type: 'filepath' as const,
-            defaultValue: ''
+            defaultValue: '',
+            dialogProperties: ['openFile']
         }
     ];
 

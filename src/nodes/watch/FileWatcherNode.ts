@@ -19,7 +19,13 @@ export class FileWatcherNode extends EventNode {
     ];
 
     readonly properties: PropertyDefinition[] = [
-        { name: 'path', label: 'File path', type: 'filepath' as const, defaultValue: '' }
+        {
+            name: 'path',
+            label: 'File path',
+            type: 'filepath' as const,
+            defaultValue: '',
+            dialogProperties: ['openFile']
+        }
     ];
 
     private watchIds: Map<string, string> = new Map();

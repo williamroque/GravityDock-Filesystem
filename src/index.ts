@@ -20,6 +20,7 @@ import { ZipNode } from './nodes/operations/ZipNode';
 import { UnzipNode } from './nodes/operations/UnzipNode';
 
 import { ChoosePathNode } from './nodes/io/ChoosePathNode';
+import { FilePickerNode } from './nodes/io/FilePickerNode';
 
 import type { GravityDockAPI } from '@gravitydock/types';
 
@@ -47,7 +48,8 @@ const nodes = [
     new MoveToTrashNode(),
     new ZipNode(),
     new UnzipNode(),
-    new ChoosePathNode()
+    new ChoosePathNode(),
+    new FilePickerNode()
 ];
 
 // 2. Register with the host app
