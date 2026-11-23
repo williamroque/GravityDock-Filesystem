@@ -4,6 +4,7 @@ import type { GravityDockAPI } from '@gravitydock/types';
 import { PDFParse } from 'pdf-parse';
 import { Buffer } from 'buffer';
 import { workerData } from './workerData';
+import { normalizePathInput } from '../../utils/PathUtils';
 
 // Set the worker source using the bundled base64 string provided by pdf-parse
 PDFParse.setWorker(workerData);
@@ -17,7 +18,7 @@ export class ReadPdfNode extends ExecuteNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path', acceptsType: 'core:path' }
+        { name: 'Path', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -36,7 +37,7 @@ export class ReadPdfNode extends ExecuteNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
+        const p = await normalizePathInput(inputs['Path']) || await normalizePathInput(properties['path']);
         if (!p) return { 'Content': '' };
         
         try {

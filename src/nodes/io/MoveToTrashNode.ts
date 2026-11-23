@@ -2,6 +2,7 @@ import { ExecuteNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
 import type { GravityDockAPI } from '@gravitydock/types';
+import { normalizePathInput } from '../../utils/PathUtils';
 
 declare const gravityDock: GravityDockAPI;
 
@@ -12,7 +13,7 @@ export class MoveToTrashNode extends ExecuteNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path', acceptsType: 'core:path' }
+        { name: 'Path', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -33,11 +34,14 @@ export class MoveToTrashNode extends ExecuteNode {
         const pathInput = inputs['Path'] || properties['path'];
         if (!pathInput) return { 'Success': false };
         
-        const paths: string[] = Array.isArray(pathInput) ? pathInput : [String(pathInput)];
+        const rawPaths = Array.isArray(pathInput) ? pathInput : [pathInput];
 
         try {
-            for (const p of paths) {
-                await gravityDock.fs.trash(String(p));
+            for (const raw of rawPaths) {
+                const p = await normalizePathInput(raw);
+                if (p) {
+                    await gravityDock.fs.trash(p);
+                }
             }
             return { 'Success': true };
         } catch (err) {

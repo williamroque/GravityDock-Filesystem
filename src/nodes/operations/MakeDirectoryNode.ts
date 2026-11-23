@@ -2,6 +2,7 @@ import { ExecuteNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
 import type { GravityDockAPI } from '@gravitydock/types';
+import { normalizePathInput } from '../../utils/PathUtils';
 
 declare const gravityDock: GravityDockAPI;
 
@@ -12,7 +13,7 @@ export class MakeDirectoryNode extends ExecuteNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path', acceptsType: 'core:path' }
+        { name: 'Path', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -31,7 +32,7 @@ export class MakeDirectoryNode extends ExecuteNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
+        const p = await normalizePathInput(inputs['Path']) || await normalizePathInput(properties['path']);
         const recursive = properties['recursive'] ?? true;
         
         if (!p) return { 'Success': false };

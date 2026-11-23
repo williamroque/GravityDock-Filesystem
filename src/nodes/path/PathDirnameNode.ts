@@ -1,6 +1,6 @@
 import { BaseNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
-import { dirname } from '../../utils/PathUtils';
+import { dirname, normalizePathInput } from '../../utils/PathUtils';
 
 export class PathDirnameNode extends BaseNode {
     readonly typeId = 'fs-path-dirname';
@@ -9,7 +9,7 @@ export class PathDirnameNode extends BaseNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path', acceptsType: 'core:path' }
+        { name: 'Path', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -21,7 +21,7 @@ export class PathDirnameNode extends BaseNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
+        const p = await normalizePathInput(inputs['Path']) || await normalizePathInput(properties['path']);
         return {
             'Dirname': dirname(p)
         };

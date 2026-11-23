@@ -5,7 +5,7 @@ import type { GravityDockAPI } from '@gravitydock/types';
 
 declare const gravityDock: GravityDockAPI;
 
-import { join } from '../../utils/PathUtils';
+import { join, normalizePathInput } from '../../utils/PathUtils';
 
 export class ListDirectoryNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -14,7 +14,7 @@ export class ListDirectoryNode extends ExecuteNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path', acceptsType: 'core:path' }
+        { name: 'Path', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -63,7 +63,7 @@ export class ListDirectoryNode extends ExecuteNode {
     }
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
+        const p = await normalizePathInput(inputs['Path']) || await normalizePathInput(properties['path']);
         if (!p) return { 'Files': [] };
 
         const recursive = Boolean(properties['recursive']);

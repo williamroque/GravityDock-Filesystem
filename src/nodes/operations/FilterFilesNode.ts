@@ -2,6 +2,7 @@ import { BaseNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
 import type { GravityDockAPI } from '@gravitydock/types';
+import { normalizePathInput } from '../../utils/PathUtils';
 
 declare const gravityDock: GravityDockAPI;
 
@@ -12,7 +13,7 @@ export class FilterFilesNode extends BaseNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Files', acceptsType: 'core:path-array' }
+        { name: 'Files', acceptsType: ['core:path-array', 'core:string-array'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -30,7 +31,8 @@ export class FilterFilesNode extends BaseNode {
         const onlyDirectories = properties['onlyDirectories'] as boolean;
 
         if (!Array.isArray(files)) return { 'Filtered Files': [] };
-        if (!pattern && !onlyDirectories) return { 'Filtered Files': files };
+        const normalizedFiles = await Promise.all(files.map((f: unknown) => normalizePathInput(f)));
+        if (!pattern && !onlyDirectories) return { 'Filtered Files': normalizedFiles };
 
         let regexes: RegExp[] = [];
         if (pattern) {
@@ -49,7 +51,8 @@ export class FilterFilesNode extends BaseNode {
             });
         }
 
-        const results = await Promise.all(files.map(async (f: string) => {
+        const results = await Promise.all(normalizedFiles.map(async (f: string) => {
+            if (!f) return false;
             if (regexes.length > 0) {
                 const matchesPattern = regexes.some(r => r.test(f) || r.test(f.split('/').pop() || '') || r.test(f.split('\\').pop() || ''));
                 if (!matchesPattern) return false;
@@ -65,7 +68,7 @@ export class FilterFilesNode extends BaseNode {
             return true;
         }));
 
-        const filtered = files.filter((_, index) => results[index]);
+        const filtered = normalizedFiles.filter((_, index) => results[index]);
 
         return { 'Filtered Files': filtered };
     }

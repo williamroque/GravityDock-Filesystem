@@ -1,6 +1,6 @@
 import { BaseNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
-import { join } from '../../utils/PathUtils';
+import { extractPathString, join, normalizePathInput } from '../../utils/PathUtils';
 
 export class PathJoinNode extends BaseNode {
     readonly typeId = 'fs-path-join';
@@ -9,7 +9,7 @@ export class PathJoinNode extends BaseNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path 1', acceptsType: 'core:path' },
+        { name: 'Path 1', acceptsType: ['core:path', 'core:string'] },
         { name: 'Path 2', acceptsType: ['core:path', 'core:string'] }
     ];
 
@@ -23,10 +23,11 @@ export class PathJoinNode extends BaseNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p1 = (inputs['Path 1'] ? String(inputs['Path 1']) : '') || (properties['path1'] ? String(properties['path1']) : '');
-        const p2 = (inputs['Path 2'] ? String(inputs['Path 2']) : '') || (properties['path2'] ? String(properties['path2']) : '');
+        const p1 = await normalizePathInput(inputs['Path 1']) || await normalizePathInput(properties['path1']);
+        const p2 = extractPathString(inputs['Path 2']) || extractPathString(properties['path2']);
+        const joined = join(p1, p2);
         return {
-            'Path': join(p1, p2)
+            'Path': await normalizePathInput(joined)
         };
     }
 }

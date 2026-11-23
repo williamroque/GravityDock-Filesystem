@@ -1,6 +1,6 @@
 import { BaseNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
-import { basename } from '../../utils/PathUtils';
+import { basename, normalizePathInput } from '../../utils/PathUtils';
 
 export class PathBasenameNode extends BaseNode {
     readonly typeId = 'fs-path-basename';
@@ -9,7 +9,7 @@ export class PathBasenameNode extends BaseNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path', acceptsType: 'core:path' }
+        { name: 'Path', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -22,7 +22,7 @@ export class PathBasenameNode extends BaseNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p = (inputs['Path'] ? String(inputs['Path']) : '') || (properties['path'] ? String(properties['path']) : '');
+        const p = await normalizePathInput(inputs['Path']) || await normalizePathInput(properties['path']);
         const extension = properties['removeExtension'] as string;
         return { 'Basename': basename(p, extension || undefined) };
     }

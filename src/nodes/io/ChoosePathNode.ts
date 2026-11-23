@@ -1,5 +1,6 @@
 import { BaseNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
+import { normalizePathInput } from '../../utils/PathUtils';
 
 export class ChoosePathNode extends BaseNode {
     readonly typeId = 'fs-choose-path';
@@ -24,7 +25,7 @@ export class ChoosePathNode extends BaseNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const path = properties['path'] ? String(properties['path']) : '';
+        const path = await normalizePathInput(properties['path']);
         return {
             'Path': path
         };

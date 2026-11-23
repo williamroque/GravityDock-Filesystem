@@ -5,6 +5,63 @@ export function isWindows(pathStr: string): boolean {
     return /^[a-zA-Z]:[\\/]/.test(pathStr) || pathStr.includes('\\');
 }
 
+declare const gravityDock: {
+    fs?: {
+        getHomeDir?: () => Promise<string>;
+    };
+};
+
+let cachedHomeDir: string | null = null;
+
+async function getHomeDir(): Promise<string> {
+    if (cachedHomeDir) return cachedHomeDir;
+
+    if (typeof gravityDock !== 'undefined' && gravityDock.fs && typeof gravityDock.fs.getHomeDir === 'function') {
+        const home = await gravityDock.fs.getHomeDir();
+        if (home) {
+            cachedHomeDir = home;
+            return home;
+        }
+    }
+
+    if (typeof process !== 'undefined' && process.env) {
+        const envHome = process.env.HOME || process.env.USERPROFILE || '';
+        if (envHome) {
+            cachedHomeDir = envHome;
+            return envHome;
+        }
+    }
+
+    return '';
+}
+
+export function extractPathString(raw: unknown): string {
+    if (typeof raw === 'string') return raw;
+    if (raw && typeof raw === 'object' && 'path' in raw && typeof (raw as { path?: unknown }).path === 'string') {
+        return (raw as { path: string }).path;
+    }
+    return '';
+}
+
+export async function normalizePathInput(raw: unknown): Promise<string> {
+    const input = extractPathString(raw);
+    if (!input) return '';
+
+    if (input === '~' || input.startsWith('~/') || input.startsWith('~\\')) {
+        const home = await getHomeDir();
+        if (!home) return input;
+
+        const cleanHome = home.replace(/[\\/]+$/, '');
+        if (input === '~') return cleanHome;
+
+        const sep = isWindows(cleanHome) ? '\\' : '/';
+        const remainder = input.slice(2).replace(/[\\/]+/g, sep);
+        return remainder ? `${cleanHome}${sep}${remainder}` : cleanHome;
+    }
+
+    return input;
+}
+
 export function basename(pathStr: string, ext?: string): string {
     const isWin = isWindows(pathStr);
     const separator = isWin ? /[\\/]/ : /\//;

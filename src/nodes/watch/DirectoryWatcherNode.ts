@@ -2,6 +2,7 @@ import { EventNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
 
 import type { GravityDockAPI } from '@gravitydock/types';
+import { normalizePathInput } from '../../utils/PathUtils';
 
 declare const gravityDock: GravityDockAPI;
 
@@ -86,7 +87,7 @@ export class DirectoryWatcherNode extends EventNode {
             return {};
         }
         this.setupListener();
-        const path = properties['path'];
+        const path = await normalizePathInput(properties['path']);
         const depth = properties['depth'] ?? 0;
 
         if (!path || !nodeId) return {};

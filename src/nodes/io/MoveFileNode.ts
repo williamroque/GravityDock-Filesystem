@@ -5,7 +5,7 @@ import type { GravityDockAPI } from '@gravitydock/types';
 
 declare const gravityDock: GravityDockAPI;
 
-import { basename, join } from '../../utils/PathUtils';
+import { basename, join, normalizePathInput } from '../../utils/PathUtils';
 
 export class MoveFileNode extends ExecuteNode {
     readonly category = { name: 'Filesystem', accent: 'blue-500' } as any;
@@ -14,8 +14,8 @@ export class MoveFileNode extends ExecuteNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Source', acceptsType: 'core:path' },
-        { name: 'Destination', acceptsType: 'core:path' }
+        { name: 'Source', acceptsType: ['core:path', 'core:string'] },
+        { name: 'Destination', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -45,10 +45,14 @@ export class MoveFileNode extends ExecuteNode {
         
         if (!srcInput || !destInput) return { 'Success': false };
         
-        const sources: string[] = Array.isArray(srcInput) ? srcInput : [String(srcInput)];
+        const sources: string[] = Array.isArray(srcInput)
+            ? await Promise.all(srcInput.map((s) => normalizePathInput(s)))
+            : [await normalizePathInput(srcInput)];
         const isDestArray = Array.isArray(destInput);
-        const destinations: string[] = isDestArray ? destInput : [];
-        const scalarDestDir = !isDestArray ? String(destInput) : '';
+        const destinations: string[] = isDestArray
+            ? await Promise.all(destInput.map((d) => normalizePathInput(d)))
+            : [];
+        const scalarDestDir = !isDestArray ? await normalizePathInput(destInput) : '';
 
         if (isDestArray && destinations.length !== sources.length) {
             console.error('MoveFile error: Destination array length must match Source array length.');

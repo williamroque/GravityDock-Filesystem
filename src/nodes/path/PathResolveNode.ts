@@ -1,6 +1,6 @@
 import { BaseNode } from '@gravitydock/types';
 import type { InputDefinition, OutputDefinition, PropertyDefinition } from '@gravitydock/types';
-import { resolve } from '../../utils/PathUtils';
+import { normalizePathInput, resolve } from '../../utils/PathUtils';
 
 export class PathResolveNode extends BaseNode {
     readonly typeId = 'fs-path-resolve';
@@ -9,8 +9,8 @@ export class PathResolveNode extends BaseNode {
     readonly visible = true;
 
     readonly inputs: InputDefinition[] = [
-        { name: 'Path 1', acceptsType: 'core:path' },
-        { name: 'Path 2', acceptsType: 'core:path' }
+        { name: 'Path 1', acceptsType: ['core:path', 'core:string'] },
+        { name: 'Path 2', acceptsType: ['core:path', 'core:string'] }
     ];
 
     readonly outputs: OutputDefinition[] = [
@@ -23,8 +23,8 @@ export class PathResolveNode extends BaseNode {
     ];
 
     async evaluate(inputs: Record<string, any>, properties: Record<string, any>): Promise<Record<string, any>> {
-        const p1 = (inputs['Path 1'] ? String(inputs['Path 1']) : '') || (properties['path1'] ? String(properties['path1']) : '');
-        const p2 = (inputs['Path 2'] ? String(inputs['Path 2']) : '') || (properties['path2'] ? String(properties['path2']) : '');
+        const p1 = await normalizePathInput(inputs['Path 1']) || await normalizePathInput(properties['path1']);
+        const p2 = await normalizePathInput(inputs['Path 2']) || await normalizePathInput(properties['path2']);
         return {
             'Path': resolve(p1, p2)
         };
