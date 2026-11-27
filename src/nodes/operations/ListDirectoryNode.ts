@@ -37,12 +37,12 @@ export class ListDirectoryNode extends ExecuteNode {
         }
     ];
 
-    private async listRecursive(dir: string): Promise<string[]> {
+    private async listRecursive(dir: string, onTopProgress?: (done: number, total: number) => void): Promise<string[]> {
         const entries = await gravityDock.fs.listDir(dir);
         const results: string[] = [];
 
-        for (const entry of entries) {
-            const fullPath = join(dir, String(entry));
+        for (let i = 0; i < entries.length; i++) {
+            const fullPath = join(dir, String(entries[i]));
             results.push(fullPath);
 
             try {
@@ -57,6 +57,10 @@ export class ListDirectoryNode extends ExecuteNode {
             } catch {
                 // Ignore entries that cannot be statted
             }
+
+            if (onTopProgress) {
+                onTopProgress(i + 1, entries.length);
+            }
         }
 
         return results;
@@ -70,16 +74,24 @@ export class ListDirectoryNode extends ExecuteNode {
 
         try {
             if (recursive) {
-                const files = await this.listRecursive(p);
+                const progressFn = (gravityDock as any).progress;
+                const files = await this.listRecursive(
+                    p,
+                    typeof progressFn === 'function'
+                        ? (done, total) => { if (total > 10) progressFn(done, total); }
+                        : undefined
+                );
                 return { 'Files': files };
             }
 
             const files = await gravityDock.fs.listDir(p);
             const absoluteFiles = files.map((f: string) => join(p, f));
             return { 'Files': absoluteFiles };
-        } catch (err) {
-            console.error('ListDirectory error', err);
-            return { 'Files': [] };
+        } catch (err: any) {
+            const msg = err && err.message ? err.message : String(err);
+            const wrapped = new Error(`List Directory failed for '${p}': ${msg}`) as Error & { hint?: string };
+            wrapped.hint = 'Verify the directory path exists and is readable';
+            throw wrapped;
         }
     }
 }
